@@ -5,8 +5,8 @@
     const loadAndProcessData = () =>
         Promise
         .all([
-        d3.tsv("https://raw.githubusercontent.com/vc64/mapD3/master/edited_50m.tsv"),
-        d3.json('https://unpkg.com/world-atlas@1.1.4/world/50m.json')
+        d3.tsv("edited_50m.tsv"),
+        d3.json('50m.json')
         ])
         .then(([tsvData, topoJSONdata]) => {
         const rowById = tsvData.reduce((accumulator, d) => {
