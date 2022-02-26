@@ -5,22 +5,45 @@
     const loadAndProcessData = () =>
         Promise
         .all([
-        d3.tsv("edited_50m.tsv"),
-        d3.json('50m.json')
+            d3.csv("gdp_total_billion_ibancode_2020.csv"),
+            d3.json('50m.json')
         ])
-        .then(([tsvData, topoJSONdata]) => {
-        const rowById = tsvData.reduce((accumulator, d) => {
-            accumulator[d.iso_n3] = d;
+        .then(([csvData, topoJSONdata]) => {
+        const rowById = csvData.reduce((accumulator, d) => {
+            accumulator[d.NumCode] = d;
             return accumulator;
         }, {});
 
         const countries = topojson.feature(topoJSONdata, topoJSONdata.objects.countries);
 
+        
+        var blankEntry = rowById[countries.features[0].id]
+
+        for (const key in blankEntry) {
+
+            if (!isNaN(key)) {
+                blankEntry[key] = "0";
+            }
+        }
+
+        // console.log(blankEntry);
+
         countries.features.forEach(d => {
-            Object.assign(d.properties, rowById[d.id]);
+            // console.log(typeof [1,2,3])
+            if (typeof rowById[d.id] === 'object') {
+                Object.assign(d.properties, rowById[d.id]);
+            } else {
+                blankEntry["NumCode"] = d.id;
+                Object.assign(d.properties, blankEntry);
+            }
+
+            // Object.assign(d.properties, rowById[d.id]);
+
+            // console.log(typeof rowById[d.id] === 'object')
+            // console.log(d.properties)
         });
 
-        return countries;
+            return countries;
         });
 
     const colorLegend = (selection, props) => {
@@ -90,18 +113,19 @@
         g.attr('transform', d3.event.transform);
     }));
 
-    const colorScale = d3.scaleOrdinal();
+    const colorScale = d3.scaleLinear();
 
     // const colorValue = d => d.properties.income_grp;
-    var colorValue = d => d.properties.economy;
+    var colorValue = d => d.properties["1960"];
     console.log(colorValue);
 
     var i = 1;                  //  set your counter to 1
 
     loadAndProcessData().then(countries => {
 
+        console.log(countries.features.map(colorValue))
         colorScale
-            .domain(countries.features.map(colorValue))
+            .domain([0, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000])
             .domain(colorScale.domain().sort().reverse())
             .range(d3.schemeSpectral[colorScale.domain().length]);
 
@@ -155,17 +179,17 @@
         (function myLoop(i) {
             setTimeout(function() {
             
-            colorValue = d => d.properties["day" + i];
+            console.log("" + (2021 - i))
+            colorValue = d => d.properties["" + (2021 - i)];
 
             console.log(colorValue);
             g.selectAll("path")
                 .transition()
-                .delay(1000)
-                .duration(1000)
+                .duration(500)
                 .attr("fill", d => colorScale(colorValue(d)))
             if (--i) myLoop(i);
-            }, 2000)
-        })(10);
+            }, 500)
+        })(61);
 
         });
     }(d3, topojson));
