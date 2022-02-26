@@ -5,7 +5,7 @@
     const loadAndProcessData = () =>
         Promise
         .all([
-        d3.tsv("C:/Users/viche/Desktop/vc/code/mapd3/50m.tsv"),
+        d3.tsv("https://raw.githubusercontent.com/vc64/mapD3/master/edited_50m.tsv"),
         d3.json('https://unpkg.com/world-atlas@1.1.4/world/50m.json')
         ])
         .then(([tsvData, topoJSONdata]) => {
@@ -154,15 +154,8 @@
 
         (function myLoop(i) {
             setTimeout(function() {
-            var color = "blue";
-            console.log(i)
-            if (i % 2 == 0) {
-                colorValue = d => d.properties.continent;
-                color = "red";
-            } else {
-                colorValue = d => d.properties.economy;
-                color = "blue";
-            }
+            
+            colorValue = d => d.properties["day" + i];
 
             console.log(colorValue);
             g.selectAll("path")
