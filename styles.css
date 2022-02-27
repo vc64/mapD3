@@ -3,8 +3,13 @@ body {
   overflow: hidden;
 }
 
+svg {
+  width: 100vw;
+  height: 100vh;
+}
+
 .sphere {
-  fill: #4242e4;
+  fill: #05a2c2;
 }
 
 .country {
@@ -13,7 +18,7 @@ body {
 }
 
 .country:hover {
-  fill: red;
+  fill: green;
 }
 
 .tick text {
