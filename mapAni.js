@@ -22,7 +22,7 @@
         for (const key in blankEntry) {
 
             if (!isNaN(key)) {
-                blankEntry[key] = "0";
+                blankEntry[key] = "-1";
             }
         }
 
@@ -121,13 +121,40 @@
 
     var i = 1;                  //  set your counter to 1
 
+    // .range(d3.schemeSpectral[colorScale.domain().length])
+
     loadAndProcessData().then(countries => {
 
         console.log(countries.features.map(colorValue))
+        // colorScale
+        //     .domain([0, 10000])
+        //     .range(["yellow", "red"])
+
+        var name = "Plasma";
+        var n = 10;
+        let dark;
+        let colors;
+
+        if (d3[`scheme${name}`] && d3[`scheme${name}`][n]) {
+            colors = d3[`scheme${name}`][n];
+            dark = d3.lab(colors[0]).l < 50;
+        } else {
+            const interpolate = d3[`interpolate${name}`];
+            colors = [];
+            dark = d3.lab(interpolate(0)).l < 50;
+            for (let i = 0; i < n; ++i) {
+              colors.push(d3.rgb(interpolate(i / (n - 1))).hex());
+            }
+        }
+
+        console.log(colors);
+
         colorScale
-            .domain([0, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000])
-            .domain(colorScale.domain().sort().reverse())
-            .range(d3.schemeSpectral[colorScale.domain().length]);
+            .domain([-1, 0, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000].reverse())
+            .range(colors.reverse());
+        // colorScale
+        //     .domain([-1, 0, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000].reverse())
+        //     .range(["#f0f0f0", "#03045e", "#023e8a", "#0077b6", "#0096c7", "#00b4d8", "#48cae4", "#90e0ef", "#ade8f4", "#caf0f8"].reverse());
 
         colorLegendG.call(colorLegend, {
             colorScale,
@@ -154,7 +181,7 @@
             .append('title')
             .text(d => d.properties.name + ': ' + colorValue(d)); */
 
-        var colors = ["red", "orange", "green", "blue"];
+        // var colors = ["red", "orange", "green", "blue"];
 
         /* colors.forEach(function(d,i) {
             setTimeout(function() {
@@ -176,17 +203,26 @@
             }, 1000);
         }); */
 
+        function colorValue(d, i) {
+            var out = d.properties["" + (2021 - i)];
+            if (out == "NA") {
+                out = -1;
+            }
+            return out
+        }
+
         (function myLoop(i) {
             setTimeout(function() {
             
-            console.log("" + (2021 - i))
-            colorValue = d => d.properties["" + (2021 - i)];
+            // console.log("" + (2021 - i))
+            // function
+            // colorValue = d => d.properties["" + (2021 - i)];
 
-            console.log(colorValue);
+            // console.log(colorValue);
             g.selectAll("path")
                 .transition()
                 .duration(500)
-                .attr("fill", d => colorScale(colorValue(d)))
+                .attr("fill", d => colorScale(colorValue(d, i)))
             if (--i) myLoop(i);
             }, 500)
         })(61);
