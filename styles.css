@@ -5,7 +5,11 @@ body {
 
 svg {
   width: 100vw;
-  height: 100vh;
+  height: 60vh;
+}
+
+.container {
+  height: 10vh;
 }
 
 .sphere {
