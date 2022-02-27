@@ -57,7 +57,7 @@
             }
         }
 
-        // console.log(blankEntry);
+        console.log(blankEntry);
 
         countries.features.forEach(d => {
             // console.log(typeof [1,2,3])
@@ -154,6 +154,11 @@
 
     // .range(d3.schemeSpectral[colorScale.domain().length])
 
+
+    var div = d3.select("body").append("div")	
+    .attr("class", "tooltip")				
+    .style("opacity", 0);
+
     loadAndProcessData().then(countries => {
         
         var startDate = 1960;
@@ -240,6 +245,19 @@
             .attr('class', 'country')
             .attr('d', pathGenerator)
             .attr("fill", d => colorScale(colorValue(d)))
+            .on("mouseover", function(d) {		
+                div.transition()		
+                    .duration(200)		
+                    .style("opacity", .9);		
+                div	.html(d.properties["" + (1960)] + "<br/>"  + d.properties.Country)	
+                    .style("left", (d3.event.pageX) + "px")		
+                    .style("top", (d3.event.pageY - 28) + "px");	
+                })					
+            .on("mouseout", function(d) {		
+                div.transition()		
+                    .duration(500)		
+                    .style("opacity", 0);	
+            });
 
         /* g.selectAll('path').data(countries.features)
             .enter().append('path')
